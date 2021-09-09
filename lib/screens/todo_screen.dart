@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_listapp/models/todo_item.dart';
 import 'package:todo_listapp/provider/provider.dart';
+import 'package:todo_listapp/screens/search_screen.dart';
 
 class ToDoScreen extends StatefulWidget {
   const ToDoScreen({Key? key}) : super(key: key);
 
   @override
-  _ToDoScreenState createState() => _ToDoScreenState();
+  ToDoScreenState createState() {
+    return ToDoScreenState();
+  }
 }
 
-class _ToDoScreenState extends State<ToDoScreen> {
+class ToDoScreenState extends State<ToDoScreen> {
   late GlobalKey<FormState> _formkey;
   late TextEditingController _controller;
   var taskItems;
@@ -20,9 +23,10 @@ class _ToDoScreenState extends State<ToDoScreen> {
   @override
   void initState() {
     super.initState();
+
     _formkey = GlobalKey();
     _controller = TextEditingController();
-    taskItems = Provider.of<ListProvider>(context, listen: false);
+   
   }
 
   void _showDialog(model) {
@@ -77,103 +81,67 @@ class _ToDoScreenState extends State<ToDoScreen> {
     );
   }
 
-  // _searchBar(model) {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(top: 25, left: 15, right: 3),
-  //     child:
-  //         // Expanded(
-  //         //   child:
-  //         Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //       children: [
-  //         Container(
-  //           width: 310,
-  //           child: TextField(
-  //             decoration: InputDecoration(
-  //               hintText: 'Search...',
-  //             ),
-  //             // onChanged: (text) {
-  //             //   text = text.toLowerCase();
-  //             //   model.todoList.searchItem(text).elementAt(index);
-  //             // },
-  //           ),
-  //         ),
-  //         IconButton(
-  //           onPressed: () {},
-  //           icon: Icon(
-  //             Icons.close,
-  //             color: Theme.of(context).primaryColor,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<ListProvider>(
         builder: (context, model, _) {
-          // return searchButton
-          //     ? _searchBar(model)
-          //     : 
           return ListView.builder(
-                  itemCount: model.todoList.length,
-                  itemBuilder: (context, index) {
-                    return Dismissible(
-                      child: Card(
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 4),
-                          child: Row(children: [
-                            IconButton(
-                                onPressed: () {
-                                  model.todoList.elementAt(index).isDone = true;
-                                },
-                                icon: model.todoList.elementAt(index).isDone
-                                    ? Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
-                                      )
-                                    : Icon(
-                                        Icons.check_box_outline_blank,
-                                        color: Colors.lightBlue,
-                                      )),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            model.todoList.elementAt(index).isDone
-                                ? Text(
-                                    model.todoList[index].title,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        decoration: TextDecoration.lineThrough),
+              itemCount: model.todoList.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  child: Card(
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 4),
+                      child: Row(children: [
+                        IconButton(
+                            onPressed: () async {
+                              model.todoList.elementAt(index).isDone = true;
+                            },
+                            icon: model.todoList.elementAt(index).isDone
+                                ? Icon(
+                                    Icons.check,
+                                    color: Theme.of(context).primaryColor,
                                   )
-                                : Text(
-                                    model.todoList[index].title,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                          ]),
+                                : Icon(
+                                    Icons.check_box_outline_blank,
+                                    color: Colors.lightBlue,
+                                  )),
+                        SizedBox(
+                          width: 10,
                         ),
-                      ),
-                      background: Container(
-                        alignment: Alignment.centerLeft,
-                        color: Colors.red,
-                        child: Text(
-                          "Deleting",
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        ),
-                      ),
-                      key: ValueKey<TodoItem>(model.todoList[index]),
-                      onDismissed: (DismissDirection direction) {
-                        // setState(() {
-                        model.todoList.removeAt(index);
-                        // });
-                      },
-                    );
-                  });
+                        model.todoList.elementAt(index).isDone
+                            ? Text(
+                                model.todoList[index].title,
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    decoration: TextDecoration.lineThrough),
+                              )
+                            : Text(
+                                model.todoList[index].title,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                      ]),
+                    ),
+                  ),
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    color: Colors.red,
+                    child: Text(
+                      "Deleting",
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
+                  ),
+                  key: ValueKey<TodoItem>(model.todoList[index]),
+                  onDismissed: (DismissDirection direction) {
+                    // setState(() {
+                    model.todoList.removeAt(index);
+                    // });
+                  },
+                );
+              });
         },
       ),
       floatingActionButtonLocation:
@@ -237,9 +205,8 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 // size: 27,
                 iconSize: 27,
                 onPressed: () async {
-                  searchButton = true;
-                  // _searchBar(model);
-                //  final finalResult = await showSearch(context: context, delegate: model.searchItem());
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SearchScreen()));
                 },
               );
             }),

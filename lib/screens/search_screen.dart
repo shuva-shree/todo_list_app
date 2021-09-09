@@ -1,44 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_listapp/models/todo_item.dart';
 import 'package:todo_listapp/provider/provider.dart';
 
-class SearchScreen extends SearchDelegate<String> {
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      )
-    ];
-  }
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back));
-  }
+  _SearchScreenState createState() => _SearchScreenState();
+}
 
-  @override
-  Widget buildResults(BuildContext context) {
-    return Consumer<ListProvider>(builder: (context, model, _) {
-      return ListView.builder(
-          itemCount: model.searchItem(query).length,
-          itemBuilder: (context, index) {
-            final List<TodoItem> searchList =
-                Provider.of<ListProvider>(context).searchItem(query);
-            return ListTile(
-              title: Text(searchList[index].title),
-            );
-          });
+class _SearchScreenState extends State<SearchScreen> {
+  final globalKey = GlobalKey<ScaffoldState>();
+  final TextEditingController controller = TextEditingController();
+  List<dynamic> list = [];
+  late bool isSearching;
+
+  searchListExampleState(model) {
+    controller.addListener(() {
+      if (controller.text.isEmpty) {
+        model.isSearching = false;
+        model.searchText = "";
+      } else {
+        model.isSearching = false;
+        model.searchText = controller.text;
+      }
     });
   }
 
+  searchBar(model) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 25, left: 15, right: 3),
+      child:
+          // Expanded(
+          //   child:
+          Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            width: 310,
+            child: Consumer<ListProvider>(
+              builder: (context, model, _) {
+                return TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                  ),
+                  onChanged: (text) {
+                    model.searchItem(text);
+                    searchListExampleState(model);
+                  },
+                );
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(
+              Icons.close,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
-  Widget buildSuggestions(BuildContext context) {
-    throw UnimplementedError();
+  Widget build(BuildContext context) {
+    return Scaffold(
+        key: globalKey,
+        body: Consumer<ListProvider>(builder: (context, model, _) {
+          return Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                searchBar(model),
+                Flexible(
+                    child: model.searchResult.length != 0 ||
+                            controller.text.isNotEmpty
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: model.searchResult.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              String listData = model.searchResult[index];
+                              return ListTile(
+                                title: Text(listData.toString()),
+                              );
+                            },
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: list.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              String listData = list[index];
+                              return ListTile(
+                                title: Text(listData.toString()),
+                              );
+                            },
+                          ))
+              ],
+            ),
+          );
+        }));
   }
 }
-
