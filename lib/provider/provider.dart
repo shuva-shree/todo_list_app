@@ -19,12 +19,11 @@ class ListProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   isTaskDone(int i) {
     todoList.elementAt(i).isDone = true;
   }
 
-  List<String> searchResult = [];
+  List<TodoItem> searchResult = [];
   String isSearching = "";
   String searchText = "";
 
@@ -33,7 +32,7 @@ class ListProvider with ChangeNotifier {
     for (var i = 0; i < todoList.length; i++) {
       String data = todoList.elementAt(i).title;
       if (data.toLowerCase().contains(searchText.toLowerCase())) {
-        searchResult.add(data);
+        searchResult.add(TodoItem(data, todoList.elementAt(i).isDone));
       }
     }
   }

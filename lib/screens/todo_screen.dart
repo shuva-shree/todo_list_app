@@ -26,7 +26,6 @@ class ToDoScreenState extends State<ToDoScreen> {
 
     _formkey = GlobalKey();
     _controller = TextEditingController();
-   
   }
 
   void _showDialog(model) {
@@ -99,6 +98,7 @@ class ToDoScreenState extends State<ToDoScreen> {
                         IconButton(
                             onPressed: () async {
                               model.todoList.elementAt(index).isDone = true;
+                              setState(() {});
                             },
                             icon: model.todoList.elementAt(index).isDone
                                 ? Icon(
@@ -108,7 +108,8 @@ class ToDoScreenState extends State<ToDoScreen> {
                                 : Icon(
                                     Icons.check_box_outline_blank,
                                     color: Colors.lightBlue,
-                                  )),
+                                  ),
+                        ),
                         SizedBox(
                           width: 10,
                         ),
@@ -198,18 +199,16 @@ class ToDoScreenState extends State<ToDoScreen> {
                 )
               ],
             ),
-            Consumer<ListProvider>(builder: (context, model, _) {
-              return IconButton(
-                icon: Icon(Icons.search),
-                color: Theme.of(context).primaryColor,
-                // size: 27,
-                iconSize: 27,
-                onPressed: () async {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SearchScreen()));
-                },
-              );
-            }),
+            IconButton(
+              icon: Icon(Icons.search),
+              color: Theme.of(context).primaryColor,
+              iconSize: 27,
+              onPressed: () async {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchScreen()));
+              },
+            ),
+            // }),
           ],
         ),
       ),

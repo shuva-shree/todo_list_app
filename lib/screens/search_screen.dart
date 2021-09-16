@@ -30,28 +30,25 @@ class _SearchScreenState extends State<SearchScreen> {
   searchBar(model) {
     return Padding(
       padding: const EdgeInsets.only(top: 25, left: 15, right: 3),
-      child:
-          // Expanded(
-          //   child:
-          Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
             width: 310,
-            child: Consumer<ListProvider>(
-              builder: (context, model, _) {
-                return TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                  ),
-                  onChanged: (text) {
-                    model.searchItem(text);
-                    searchListExampleState(model);
-                  },
-                );
+            child:TextField(
+              decoration: InputDecoration(
+                hintText: 'Search...',
+              ),
+              onChanged: (text) {
+                setState(() {
+                  model.searchItem(text);
+                  searchListExampleState(model);
+                });
               },
             ),
+            // },
           ),
+          // ),
           IconButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -78,15 +75,36 @@ class _SearchScreenState extends State<SearchScreen> {
               children: <Widget>[
                 searchBar(model),
                 Flexible(
-                    child: model.searchResult.length != 0 ||
-                            controller.text.isNotEmpty
+                    child: (model.searchResult.length != 0 ||
+                            controller.text.isNotEmpty)
                         ? ListView.builder(
                             shrinkWrap: true,
                             itemCount: model.searchResult.length,
                             itemBuilder: (BuildContext context, int index) {
-                              String listData = model.searchResult[index];
                               return ListTile(
-                                title: Text(listData.toString()),
+                                //leading: ,
+                                title: Text(
+                                    model.searchResult[index].title.toString()),
+                                leading: IconButton(
+                                    icon: Icon(
+                                      Icons.check_box_outline_blank,
+                                      color: Colors.lightBlue,
+                                    ),
+                                    onPressed: () {
+                                      model.isTaskDone(index);
+                                      setState(() {
+                                        model.searchResult[index].isDone
+                                            ? Icon(
+                                                Icons.check,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              )
+                                            : Icon(
+                                                Icons.check_box_outline_blank,
+                                                color: Colors.lightBlue,
+                                              );
+                                      });
+                                    }),
                               );
                             },
                           )
@@ -94,10 +112,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             shrinkWrap: true,
                             itemCount: list.length,
                             itemBuilder: (BuildContext context, int index) {
-                              String listData = list[index];
-                              return ListTile(
-                                title: Text(listData.toString()),
-                              );
+                              return Text("No results found");
                             },
                           ))
               ],
