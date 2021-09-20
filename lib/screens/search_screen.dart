@@ -1,15 +1,19 @@
+
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:provider/provider.dart';
 import 'package:todo_listapp/provider/provider.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+// class SearchScreen extends StatefulWidget {
+//   const SearchScreen({Key? key}) : super(key: key);
 
-  @override
-  _SearchScreenState createState() => _SearchScreenState();
-}
+//   @override
+//   _SearchScreenState createState() => _SearchScreenState();
+// }
 
-class _SearchScreenState extends State<SearchScreen> {
+// ignore: must_be_immutable
+class SearchScreen extends ConsumerWidget {
   final globalKey = GlobalKey<ScaffoldState>();
   final TextEditingController controller = TextEditingController();
   List<dynamic> list = [];
@@ -27,7 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  searchBar(model) {
+Widget searchBar(getSearchData,context) {
     return Padding(
       padding: const EdgeInsets.only(top: 25, left: 15, right: 3),
       child: Row(
@@ -35,15 +39,15 @@ class _SearchScreenState extends State<SearchScreen> {
         children: [
           Container(
             width: 310,
-            child:TextField(
+            child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search...',
               ),
               onChanged: (text) {
-                setState(() {
-                  model.searchItem(text);
-                  searchListExampleState(model);
-                });
+                // setState(() {
+                  getSearchData.searchItem(text);
+                  searchListExampleState((getSearchData));
+                // });
               },
             ),
             // },
@@ -64,36 +68,37 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,watch) {
+    final getSearchData = watch(getData);
     return Scaffold(
         key: globalKey,
-        body: Consumer<ListProvider>(builder: (context, model, _) {
+        body: Consumer(builder: (context, model, _) {
           return Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                searchBar(model),
+                searchBar(getSearchData,context),
                 Flexible(
-                    child: (model.searchResult.length != 0 ||
+                    child: ( getSearchData.searchResult.length != 0 ||
                             controller.text.isNotEmpty)
                         ? ListView.builder(
                             shrinkWrap: true,
-                            itemCount: model.searchResult.length,
+                            itemCount:  getSearchData.searchResult.length,
                             itemBuilder: (BuildContext context, int index) {
                               return ListTile(
                                 //leading: ,
                                 title: Text(
-                                    model.searchResult[index].title.toString()),
+                                     getSearchData.searchResult[index].title.toString()),
                                 leading: IconButton(
                                     icon: Icon(
                                       Icons.check_box_outline_blank,
                                       color: Colors.lightBlue,
                                     ),
                                     onPressed: () {
-                                      model.isTaskDone(index);
-                                      setState(() {
-                                        model.searchResult[index].isDone
+                                       getSearchData.isTaskDone(index);
+                                      // setState(() {
+                                        getSearchData.searchResult[index].isDone
                                             ? Icon(
                                                 Icons.check,
                                                 color: Theme.of(context)
@@ -103,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 Icons.check_box_outline_blank,
                                                 color: Colors.lightBlue,
                                               );
-                                      });
+                                      // });
                                     }),
                               );
                             },
